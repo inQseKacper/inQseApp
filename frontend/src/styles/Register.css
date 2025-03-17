@@ -48,6 +48,7 @@
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.3s ease;
+    margin-top: 3vh;
 }
 
 .register-button:hover {
@@ -55,7 +56,55 @@
     transform: scale(1.05);
 }
 
+.logo-container {
+    display: flex;
+    justify-content: center; /* Wyśrodkowanie poziome */
+    align-items: center; /* Wyśrodkowanie pionowe (jeśli potrzebne) */
+    width: 100%;
+    margin-bottom: 20px; /* Opcjonalny odstęp od formularza */
+}
 
 .logo {
-    margin-left: 14vh;
+    display: block;
+    margin: 0 auto; /* Wyśrodkowanie */
+    max-width: 100%; /* Zapobieganie wychodzeniu poza kontener */
+    height: auto; /* Zachowanie proporcji */
 }
+
+
+.flex-container {
+    display: flex;
+    align-items: center; /* Wyrównanie elementów w pionie */
+    gap: 10px; /* Odstęp między `p` a `button` */
+    margin-top: 2vh;
+}
+
+.bottom-button {
+    background: #0c2852;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+}
+
+.bottom-button:hover {
+    background: #011e3d;
+    transform: scale(1.05);
+}
+
+.register-p {
+    font-size: 12px;
+}
+
+.error-message {
+    color: red;
+    background-color: #ffe6e6;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
