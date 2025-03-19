@@ -12,6 +12,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
+from rest_framework.views import APIView
+
 
 class NoteListCreate(generics.ListCreateAPIView):
     serializer_class = NoteSerializer
@@ -70,24 +72,26 @@ class CreateUserView(generics.CreateAPIView):
 
 User = get_user_model()   
 
-@api_view(['POST'])
-@permission_classes([AllowAny])  # 🔥 Pozwala każdemu na dostęp
-def verify_code(request):
-    email = request.data.get("email")
-    code = request.data.get("code")
-    print(f"Otrzymano w żądaniu: email={email}, code={code}")
+class VerifyCodeView(APIView):
+    permission_classes = [AllowAny]  # 🔥 To pozwala na dostęp bez tokena
 
-    try:
-        user = User.objects.get(email=email)
-        verification = EmailVerification.objects.get(user=user)
+    def post(self, request):
+        email = request.data.get("email")
+        code = request.data.get("code")
 
-        if verification.verification_code == code:
-            user.is_active = True
-            user.save()
-            verification.delete()
-            return Response({"message": "Konto zostało aktywowane!"}, status=200)
-        else:
-            return Response({"error": "Niepoprawny kod weryfikacyjny."}, status=400)
+        print(f"Otrzymano w żądaniu: email={email}, code={code}")
+        
+        try:
+            user = User.objects.get(email=email)
+            verification = EmailVerification.objects.get(user=user)
 
-    except (User.DoesNotExist, EmailVerification.DoesNotExist):
-        return Response({"error": "Nie znaleziono użytkownika lub kodu."}, status=400)
+            if verification.verification_code == code:
+                user.is_active = True
+                user.save()
+                verification.delete()
+                return Response({"message": "Konto zostało aktywowane!"}, status=200)
+            else:
+                return Response({"error": "Niepoprawny kod weryfikacyjny."}, status=400)
+        
+        except (User.DoesNotExist, EmailVerification.DoesNotExist):
+            return Response({"error": "Nie znaleziono użytkownika lub kodu."}, status=400)
