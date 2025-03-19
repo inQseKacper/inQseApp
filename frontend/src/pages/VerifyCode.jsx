@@ -8,24 +8,33 @@ const VerifyCode = () => {
     const navigate = useNavigate();
 
     const handleSubmit = async (values, { setSubmitting }) => {
+        const formattedValues = {
+            email: values.email,
+            code: String(values.code)  // Konwersja kodu na string
+        };
+
         setMessage("");
         try {
-            const res = await api.post("/api/verify/", values, {
-                headers: {
-                    "Content-Type": "application/json", // 🔥 Upewniamy się, że to JSON
-                },
+            const res = await api.post("/api/verify/", formattedValues, {
+                headers: { "Content-Type": "application/json" }
             });
-
-            setMessage(res.data.message);
-            alert("Konto zweryfikowane! Możesz się zalogować.");
+    
+            console.log("Weryfikacja udana:", res.data);
+            alert("Konto zostało aktywowane!");
             navigate("/login");
         } catch (error) {
-            console.error("Błąd weryfikacji:", error.response?.data);
-            setMessage(error.response?.data.error || "Wystąpił błąd.");
+            console.error("Błąd weryfikacji:", error);
+            
+            if (error.response) {
+                console.error("Odpowiedź serwera:", error.response.data);
+                alert(`Błąd weryfikacji: ${error.response.data.error || "Nieznany błąd!"}`);
+            } else {
+                alert("Nie udało się nawiązać połączenia z serwerem.");
+            }
+        } finally {
+            setSubmitting(false);
         }
-        setSubmitting(false);
     };
-
     return (
         <div className="centered-container">
             <h2>Weryfikacja konta</h2>
