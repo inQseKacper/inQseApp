@@ -1,6 +1,5 @@
-from django.shortcuts import render
 from django.contrib.auth.models import User
-from rest_framework import generics
+from rest_framework import generics, status
 from .serializers import UserSerializer, NoteSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Note
@@ -43,6 +42,10 @@ class CreateUserView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
+        email = serializer.validated_data.get("email")
+        if User.objects.filter(email=email).exists():
+            return Response({"error": "Użytkownik z tym adresem e-mail już istnieje."}, status=status.HTTP_400_BAD_REQUEST)
+        
         user = serializer.save(is_active=False)
 
         verification_code = ''.join(random.choices(string.digits, k=6))
@@ -63,7 +66,7 @@ User = get_user_model()
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def verify_code(request):
-    print(f"📩 Pełne request.data: {request.data}")
+    print(f"Pełne request.data: {request.data}")
     email = request.data.get("email")
     code = request.data.get("code")
 

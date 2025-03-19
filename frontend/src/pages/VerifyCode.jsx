@@ -1,20 +1,21 @@
 import { useState } from "react";
-import api from "../api";
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 
 const VerifyCode = () => {
-    const [email, setEmail] = useState("");
-    const [code, setCode] = useState("");
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
 
-    const handleVerify = async (e) => {
-        e.preventDefault();
-        setMessage("")
-        
+    const handleSubmit = async (values, { setSubmitting }) => {
+        setMessage("");
         try {
-            const res = await api.post("/api/verify/", { email, code });
+            const res = await api.post("/api/verify/", values, {
+                headers: {
+                    "Content-Type": "application/json", // 🔥 Upewniamy się, że to JSON
+                },
+            });
+
             setMessage(res.data.message);
             alert("Konto zweryfikowane! Możesz się zalogować.");
             navigate("/login");
@@ -22,31 +23,31 @@ const VerifyCode = () => {
             console.error("Błąd weryfikacji:", error.response?.data);
             setMessage(error.response?.data.error || "Wystąpił błąd.");
         }
+        setSubmitting(false);
     };
 
     return (
         <div className="centered-container">
-            <h2>Wpisz kod weryfikacyjny</h2>
-            <form onSubmit={handleVerify}>
-                <input 
-                    type="email"
-                    placeholder="Twój e-mail"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-                <input 
-                    type="text"
-                    placeholder="Kod weryfikacyjny"
-                    value={code}
-                    onChange={(e) => setCode(e.target.value)}
-                    required
-                />
-                <button type="submit">Zweryfikuj</button>
-            </form>
-            {message && <p className="error-message">{message}</p>}
+            <h2>Weryfikacja konta</h2>
+            {message && <p>{message}</p>}
+            <Formik
+                initialValues={{ email: "", code: "" }}
+                onSubmit={handleSubmit}
+            >
+                {({ isSubmitting }) => (
+                    <Form>
+                        <Field type="email" name="email" placeholder="Email" required />
+                        <ErrorMessage name="email" component="p" className="error-message" />
+
+                        <Field type="text" name="code" placeholder="Kod weryfikacyjny" required />
+                        <ErrorMessage name="code" component="p" className="error-message" />
+
+                        <button type="submit" disabled={isSubmitting}>Zweryfikuj</button>
+                    </Form>
+                )}
+            </Formik>
         </div>
     );
-}
+};
 
 export default VerifyCode;
