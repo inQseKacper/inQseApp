@@ -48,7 +48,7 @@ function Register() {
             console.log("Rejestracja udana:", res.data);
             resetForm();
             setSubmitting(false);
-            navigate("/");
+            navigate("/verify");
           } catch (error) {
             console.error("Błąd rejestracji:", error);
 

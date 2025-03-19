@@ -63,6 +63,7 @@ User = get_user_model()
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def verify_code(request):
+    print(f"📩 Pełne request.data: {request.data}")
     email = request.data.get("email")
     code = request.data.get("code")
 
