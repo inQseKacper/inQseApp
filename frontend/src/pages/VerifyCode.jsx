@@ -1,44 +1,45 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 
 const VerifyCode = () => {
     const [message, setMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");  // 🔥 Dodałem obsługę błędu
     const navigate = useNavigate();
 
-    const handleSubmit = async (values, { setSubmitting }) => {
-        const formattedValues = {
-            email: values.email,
-            code: String(values.code)  // Konwersja kodu na string
-        };
-
+    const handleSubmit = async ({ email, code }, { setSubmitting }) => {
         setMessage("");
+        setErrorMessage(""); // 🔥 Resetujemy błąd przy nowym żądaniu
+
         try {
-            const res = await api.post("/api/verify/", formattedValues, {
-                headers: { "Content-Type": "application/json" }
+            const res = await api.post("/api/verify/", {
+                email,
+                code
+            }, {
+                headers: {
+                    "Content-Type": "application/json",
+                }
             });
-    
-            console.log("Weryfikacja udana:", res.data);
-            alert("Konto zostało aktywowane!");
-            navigate("/login");
+
+            console.log("Odpowiedź serwera:", res.data);
+            setMessage("Konto zostało zweryfikowane!");
+            alert("Konto zostało zweryfikowane!");
+            navigate('/login');
         } catch (error) {
-            console.error("Błąd weryfikacji:", error);
-            
-            if (error.response) {
-                console.error("Odpowiedź serwera:", error.response.data);
-                alert(`Błąd weryfikacji: ${error.response.data.error || "Nieznany błąd!"}`);
-            } else {
-                alert("Nie udało się nawiązać połączenia z serwerem.");
-            }
+            console.error("Błąd weryfikacji:", error.response?.data || error.message);
+            setErrorMessage(error.response?.data?.error || "Wystąpił błąd.");  // 🔥 Tutaj była literówka!
         } finally {
             setSubmitting(false);
         }
     };
+
     return (
         <div className="centered-container">
             <h2>Weryfikacja konta</h2>
-            {message && <p>{message}</p>}
+            {message && <p className="success-message">{message}</p>}
+            {errorMessage && <p className="error-message">{errorMessage}</p>} {/* 🔥 Wyświetlenie błędu */}
+
             <Formik
                 initialValues={{ email: "", code: "" }}
                 onSubmit={handleSubmit}

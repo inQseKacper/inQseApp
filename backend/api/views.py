@@ -71,29 +71,23 @@ class CreateUserView(generics.CreateAPIView):
 User = get_user_model()   
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([AllowAny])  # 🔥 Pozwala każdemu na dostęp
 def verify_code(request):
-    print(f"Pełne request.data: {request.data}")
     email = request.data.get("email")
     code = request.data.get("code")
-
     print(f"Otrzymano w żądaniu: email={email}, code={code}")
 
     try:
         user = User.objects.get(email=email)
         verification = EmailVerification.objects.get(user=user)
 
-        print(f"Kod w bazie: {verification.verification_code}")
-
-        if str(verification.verification_code) == str(code):
+        if verification.verification_code == code:
             user.is_active = True
             user.save()
             verification.delete()
             return Response({"message": "Konto zostało aktywowane!"}, status=200)
         else:
-            print("Kod nie pasuje!")
             return Response({"error": "Niepoprawny kod weryfikacyjny."}, status=400)
 
     except (User.DoesNotExist, EmailVerification.DoesNotExist):
-        print("Nie znaleziono użytkownika lub kodu!")
         return Response({"error": "Nie znaleziono użytkownika lub kodu."}, status=400)
