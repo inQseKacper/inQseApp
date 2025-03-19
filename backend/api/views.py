@@ -10,7 +10,8 @@ import string
 import os
 from django.core.mail import send_mail
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from django.contrib.auth import get_user_model
 
 class NoteListCreate(generics.ListCreateAPIView):
     serializer_class = NoteSerializer
@@ -55,21 +56,24 @@ class CreateUserView(generics.CreateAPIView):
             fail_silently=False,
         )
         return Response({"message": "Rejestracja udana! Sprawdź swoją skrzynkę e-mail."}, status=201)
-    
+
+
+User = get_user_model()   
 
 @api_view(['POST'])
-def verify_code(requset):
-    email = requset.data.get(email)
-    code = requset.data.get(code)
-    
+@permission_classes([AllowAny])
+def verify_code(request):
+    email = request.data.get("email")
+    code = request.data.get("code")
+
     try:
         user = User.objects.get(email=email)
         verification = EmailVerification.objects.get(user=user)
 
         if verification.verification_code == code:
-            user.is_active = True  # Aktywujemy konto!
+            user.is_active = True
             user.save()
-            verification.delete()  # Usuwamy kod po aktywacji
+            verification.delete()
             return Response({"message": "Konto zostało aktywowane!"}, status=200)
         else:
             return Response({"error": "Niepoprawny kod weryfikacyjny."}, status=400)
