@@ -41,7 +41,7 @@ class CreateUserView(generics.CreateAPIView):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
-    def preform_create(self, serializer):
+    def perform_create(self, serializer):
         user = serializer.save(is_active=False)
 
         verification_code = ''.join(random.choices(string.digits, k=6))
