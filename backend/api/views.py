@@ -11,6 +11,7 @@ from django.core.mail import send_mail
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import get_user_model
+from rest_framework.exceptions import ValidationError
 
 class NoteListCreate(generics.ListCreateAPIView):
     serializer_class = NoteSerializer
@@ -44,7 +45,7 @@ class CreateUserView(generics.CreateAPIView):
     def perform_create(self, serializer):
         email = serializer.validated_data.get("email")
         if User.objects.filter(email=email).exists():
-            raise serializer.ValidationError({"email": "Użytkownik z tym adresem e-mail już istnieje."})
+            raise ValidationError({"email": "Użytkownik z tym adresem e-mail już istnieje."})
 
         
         try:
