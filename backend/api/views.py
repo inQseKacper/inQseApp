@@ -44,21 +44,27 @@ class CreateUserView(generics.CreateAPIView):
     def perform_create(self, serializer):
         email = serializer.validated_data.get("email")
         if User.objects.filter(email=email).exists():
-            return Response({"error": "Użytkownik z tym adresem e-mail już istnieje."}, status=status.HTTP_400_BAD_REQUEST)
+            raise serializer.ValidationError({"email": "Użytkownik z tym adresem e-mail już istnieje."})
+
         
-        user = serializer.save(is_active=False)
+        try:
+            user = serializer.save(is_active=False)
 
-        verification_code = ''.join(random.choices(string.digits, k=6))
-        EmailVerification.objects.create(user=user, verification_code=verification_code)
+            verification_code = ''.join(random.choices(string.digits, k=6))
+            EmailVerification.objects.create(user=user, verification_code=verification_code)
 
-        send_mail(
-            "Twój kod weryfikacyjny",
-            f"Twój kod weryfikacyjny to: {verification_code}",
-            os.getenv("EMAIL_HOST_USER"),
-            [user.email],  # Odbiorca
-            fail_silently=False,
-        )
-        return Response({"message": "Rejestracja udana! Sprawdź swoją skrzynkę e-mail."}, status=201)
+            send_mail(
+                "Twój kod weryfikacyjny",
+                f"Twój kod weryfikacyjny to: {verification_code}",
+                os.getenv("EMAIL_HOST_USER"),
+                [user.email],
+                fail_silently=False,
+            )
+
+            return Response({"message": "Rejestracja udana! Sprawdź swoją skrzynkę e-mail."}, status=status.HTTP_201_CREATED)
+        
+        except Exception as e:
+            return Response({"error": f"Wystąpił błąd: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 User = get_user_model()   
