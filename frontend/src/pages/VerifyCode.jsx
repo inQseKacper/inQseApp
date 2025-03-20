@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import api from "../api";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import "../styles/Register.css";
+import { ACCESS_TOKEN } from "../constants";
+
+const token = localStorage.getItem(ACCESS_TOKEN);
 
 const VerifyCode = () => {
   const [message, setMessage] = useState("");
@@ -56,6 +59,7 @@ const VerifyCode = () => {
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "", // 🔥 Sprawdź, czy token istnieje
           },
         }
       );
@@ -74,7 +78,7 @@ const VerifyCode = () => {
   return (
     <div className="centered-container">
       <Formik initialValues={{ email: "", code: "" }} onSubmit={handleSubmit}>
-        {({ isSubmitting, handleChange }) => (
+        {({ isSubmitting, values, handleChange }) => (
           <Form>
             <a href="https://inqse.com/" target="_blank">
               <img
@@ -84,9 +88,9 @@ const VerifyCode = () => {
               />
             </a>
             {message && <p className="success-message">{message}</p>}
-            {errorMessage && (
-              <p className="error-message">{errorMessage}</p>
-            )}{" "}
+            {errorMessage && <p className="error-message">{errorMessage}</p>}
+
+            {/* Pole na email – Aktualizujemy stan dla obydwu akcji */}
             <Field
               type="email"
               name="email"
@@ -94,14 +98,17 @@ const VerifyCode = () => {
               required
               onChange={(e) => {
                 handleChange(e);
-                setResendEmail(e.target.value);
+                setResendEmail(e.target.value); // 🔥 Ustawia email do ponownego wysłania kodu
               }}
+              value={values.email} // 🔥 Zapewnia synchronizację z Formikiem
             />
             <ErrorMessage
               name="email"
               component="p"
               className="error-message"
             />
+
+            {/* Pole na kod */}
             <Field
               type="text"
               name="code"
@@ -109,7 +116,9 @@ const VerifyCode = () => {
               required
             />
             <ErrorMessage name="code" component="p" className="error-message" />
+
             <div className="flex-container">
+              {/* 🔹 Ten przycisk wysyła formularz do weryfikacji kodu */}
               <button
                 className="register-button verify"
                 type="submit"
@@ -117,11 +126,13 @@ const VerifyCode = () => {
               >
                 Zweryfikuj
               </button>
+
+              {/* 🔹 Ten przycisk działa poza formularzem – nie wysyła formularza */}
               <button
                 className="register-button verify"
-                type="button"
+                type="button" // 🔥 Zapobiega wysyłaniu formularza
                 disabled={isSubmitting}
-                onClick={handleResendCode}
+                onClick={() => handleResendCode(resendEmail)} // 🔥 Przekazujemy aktualny email
               >
                 Wyślij kod ponownie
               </button>
