@@ -10,7 +10,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    if (!config.url.includes("/verify/") && !config.url.includes("/resend-code/")) {
+    if (!config.url.includes("/verify/") && !config.url.includes("/resend-code/") && !config.url.includes("/password-reset/")) {
       const token = localStorage.getItem(ACCESS_TOKEN);
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;

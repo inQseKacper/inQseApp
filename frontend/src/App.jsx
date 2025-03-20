@@ -6,6 +6,8 @@ import Home from "./pages/Home"
 import NotFound from "./pages/NotFound"
 import ProtectedRoute from "./components/ProtectedRoute"
 import VerifyCode from "./pages/VerifyCode"
+import RequestResetPasswod from "./pages/RequestResetPassword"
+import ResetPassword from "./pages/ResetPassword"
 
 function Logout() {
   localStorage.clear()
@@ -34,6 +36,8 @@ function App() {
         <Route path="/register" element={<RegisterAndLogout />} />
         <Route path="/verify" element={<VerifyCode />} />
         <Route path="*" element={<NotFound />}></Route>
+        <Route path="/password-reset" element={<RequestResetPasswod />} />
+        <Route path="/password-reset-confirm/:uidb64/:token" element={<ResetPassword />} />
       </Routes>
     </BrowserRouter>
   )
