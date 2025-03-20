@@ -141,25 +141,25 @@ class RequestResetPasswordView(APIView):
     def post(self, request):
         email = request.data.get("email")
 
-        user = User.objects.get(email=email)
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"error": "Nie znaleziono konta z tym adresem e-mail."}, status=status.HTTP_400_BAD_REQUEST)
 
-        if user.is_active:
-            uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
 
-            reset_link = f"https://inqsepartner.netlify.app/password-reset-confirm/{uidb64}/{token}"
-            
-            send_mail(
-                "Resetowanie hasła",
-                f"Kliknij poniższy link, aby zresetować hasło: {reset_link}",
-                "inqsepartner@gmail.com",
-                [user.email],
-                fail_silently=False,
-            )
+        reset_link = f"https://inqsepartner.netlify.app/password-reset-confirm/{uidb64}/{token}"
+        
+        send_mail(
+            "Resetowanie hasła",
+            f"Kliknij poniższy link, aby zresetować hasło: {reset_link}",
+            "inqsepartner@gmail.com",
+            [user.email],
+            fail_silently=False,
+        )
 
-            return Response({"message": "E-mail z linkiem do resetowania hasła został wysłany."}, status=status.HTTP_200_OK)
-        else:
-            return Response({"message": "Nie ma takiego konta"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "E-mail z linkiem do resetowania hasła został wysłany."}, status=status.HTTP_200_OK)
 
 
 class ResetPasswordConfirmView(APIView):

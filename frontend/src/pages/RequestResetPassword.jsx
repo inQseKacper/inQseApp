@@ -23,9 +23,9 @@ function RequestResetPasswod() {
       setMessage("Link do resetowania hasła został wysłany.");
     } catch (error) {
       if (error.response?.data === "Nie ma takiego konta") {
-        setError("Adres e-mail nie istnieje w naszej bazie.");
+        setErrorMessage("Adres e-mail nie istnieje w naszej bazie.");
       } else {
-        setError(error.response?.data || "Wystąpił błąd. Spróbuj ponownie.");
+        setErrorMessage(error.response?.data || "Wystąpił błąd. Spróbuj ponownie.");
       }
     }
   };
@@ -57,7 +57,7 @@ function RequestResetPasswod() {
             className="register-button verify"
             type="submit"
           >
-            Zweryfikuj
+            Wyślij
           </button>
 
           <button

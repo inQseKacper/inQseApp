@@ -1,5 +1,11 @@
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import api from "../api";
+import "../styles/Register.css";
+
 function ResetPassword() {
-  const { uidb64, token } = useParams(); // Pobranie parametrów z URL
+  const { uidb64, token } = useParams();
   const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
