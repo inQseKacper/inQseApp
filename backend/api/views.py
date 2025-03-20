@@ -137,6 +137,7 @@ class ResendVerificationCodeView(APIView):
             return Response({"error": "Nie znaleziono użytkownika z tym adresem e-mail."}, status=status.HTTP_400_BAD_REQUEST)
         
 class RequestResetPasswordView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         email = request.data.get("email")
 
@@ -164,6 +165,7 @@ class RequestResetPasswordView(APIView):
 
 
 class ResetPasswordConfirmView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, uidb64, token):
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
