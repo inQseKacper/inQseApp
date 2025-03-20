@@ -22,12 +22,14 @@ function RequestResetPasswod() {
       const res = await api.post("/api/password-reset/", { email });
       setMessage("Link do resetowania hasła został wysłany.");
     } catch (error) {
-      if (error.response?.data === "Nie ma takiego konta") {
-        setErrorMessage("Adres e-mail nie istnieje w naszej bazie.");
+      console.error("Błąd resetowania hasła:", error.response?.data || error.message);
+  
+      if (error.response?.status === 400) {
+          setErrorMessage(error.response?.data?.error || "Nieprawidłowe dane.");
       } else {
-        setErrorMessage(error.response?.data || "Wystąpił błąd. Spróbuj ponownie.");
+          setErrorMessage("Wystąpił błąd. Spróbuj ponownie później.");
       }
-    }
+  }
   };
 
   return (

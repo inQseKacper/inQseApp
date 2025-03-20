@@ -41,8 +41,6 @@ function ResetPassword() {
 
   return (
     <div className="centered-container">
-      <h2>Ustaw nowe hasło</h2>
-
       <form onSubmit={handleSubmit}>
         <a href="https://inqse.com/" target="_blank">
           <img
