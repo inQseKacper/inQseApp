@@ -1,20 +1,16 @@
 import { useState } from "react";
 import "../styles/Register.css";
-import "../styles/Register.css";
 import api from "../api";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function RequestResetPasswod() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const naigate = useNavigate()
-
+  const navigate = useNavigate();
 
   const handleRedirect = () => {
-    setTimeout(() => {
-      naigate("/")
-    }, 7000);
+    navigate("/")
   }
 
   const handleSubmit = async (e) => {
@@ -28,22 +24,22 @@ function RequestResetPasswod() {
     } catch (error) {
       if (error.response?.data === "Nie ma takiego konta") {
         setError("Adres e-mail nie istnieje w naszej bazie.");
-    } else {
+      } else {
         setError(error.response?.data || "Wystąpił błąd. Spróbuj ponownie.");
-    }
+      }
     }
   };
 
   return (
     <div className="centered-container">
       <form onSubmit={handleSubmit}>
-      <a href="https://inqse.com/" target="_blank">
-        <img
-          src="https://quguse.pl/img/INQSE_logo.png"
-          alt="Logo INQSE"
-          className="logo"
-        />
-      </a>
+        <a href="https://inqse.com/" target="_blank">
+          <img
+            src="https://quguse.pl/img/INQSE_logo.png"
+            alt="Logo INQSE"
+            className="logo"
+          />
+        </a>
         {message && <p className="success-message">{message}</p>}
         {errorMessage && <p className="error-message">{errorMessage}</p>}
         <input
@@ -53,7 +49,25 @@ function RequestResetPasswod() {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <button className="register-button request-btn" type="submit" onClick={handleRedirect}>Wyślij</button>
+        {/* <button className="register-button request-btn" type="submit">
+          Wyślij
+        </button> */}
+        <div className="flex-container">
+          <button
+            className="register-button verify"
+            type="submit"
+          >
+            Zweryfikuj
+          </button>
+
+          <button
+            className="register-button verify"
+            type="button"
+            onClick={handleRedirect}
+          >
+            Logowanie
+          </button>
+        </div>
       </form>
     </div>
   );
