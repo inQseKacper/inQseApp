@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import api from "../api";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import "../styles/Register.css";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const VerifyCode = () => {
   const [message, setMessage] = useState("");
@@ -19,10 +21,18 @@ const VerifyCode = () => {
         headers: { "Content-Type": "application/json" },
       });
 
-      console.log("Odpowiedź serwera:", res.data);
       setMessage("Konto zostało zweryfikowane!");
-      alert("Konto zostało zweryfikowane!");
-      navigate("/login");
+      toast.success("Twoje konto zostało zweryfikowane! 🎉", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      setTimeout(() =>{
+        navigate("/login");
+      }, 3000)
     } catch (error) {
       console.error("Błąd weryfikacji:", error.response?.data || error.message);
       setErrorMessage(error.response?.data?.error || "Wystąpił błąd.");

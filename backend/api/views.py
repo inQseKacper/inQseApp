@@ -9,10 +9,14 @@ import string
 import os
 from django.core.mail import send_mail
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.urls import reverse
+from django.utils.http import urlsafe_base64_decode
 
 
 class NoteListCreate(generics.ListCreateAPIView):
@@ -59,6 +63,7 @@ class CreateUserView(generics.CreateAPIView):
             send_mail(
                 "Twój kod weryfikacyjny",
                 f"Twój kod weryfikacyjny to: {verification_code}",
+                "Tutja możesz potwierdzić swój kod: https://inqsepartner.netlify.app/verify",
                 os.getenv("EMAIL_HOST_USER"),
                 [user.email],
                 fail_silently=False,
@@ -130,3 +135,55 @@ class ResendVerificationCodeView(APIView):
 
         except User.DoesNotExist:
             return Response({"error": "Nie znaleziono użytkownika z tym adresem e-mail."}, status=status.HTTP_400_BAD_REQUEST)
+        
+class RequestResetPasswordView(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+
+        user = User.objects.get(email=email)
+
+        if user.is_active:
+            uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+
+            reset_link = request.build_absolute_uri(
+                reverse("password-reset-confirm", kwargs={"uidb64": uidb64, "token": token})
+        )
+            
+            send_mail(
+                "Resetowanie hasła",
+                f"Kliknij poniższy link, aby zresetować hasło: {reset_link}",
+                "inqsepartner@gmail.com",
+                [user.email],
+                fail_silently=False,
+            )
+
+            return Response({"message": "E-mail z linkiem do resetowania hasła został wysłany."}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "Nie ma takiego konta"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ResetPasswordConfirmView(APIView):
+    def post(self, request, uidb64, token):
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = User.objects.get(pk=uid)
+
+            # Weryfikacja tokena
+            if not default_token_generator.check_token(user, token):
+                return Response({"error": "Token jest nieprawidłowy lub wygasł."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Pobranie nowego hasła
+            new_password = request.data.get("new_password")
+            confirm_password = request.data.get("confirm_password")
+
+            if new_password != confirm_password:
+                return Response({"error": "Hasła nie pasują do siebie."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Zmiana hasła użytkownika
+            user.set_password(new_password)
+            user.save()
+
+            return Response({"message": "Hasło zostało zmienione."}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response({"error": "Błąd przetwarzania żądania."}, status=status.HTTP_400_BAD_REQUEST)
