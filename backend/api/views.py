@@ -15,8 +15,10 @@ from rest_framework.views import APIView
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
-from django.urls import reverse
 from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
+from django.utils.timezone import now
+from datetime import timedelta
 
 
 class NoteListCreate(generics.ListCreateAPIView):
@@ -162,28 +164,32 @@ class RequestResetPasswordView(APIView):
         return Response({"message": "E-mail z linkiem do resetowania hasła został wysłany."}, status=status.HTTP_200_OK)
 
 
-class ResetPasswordConfirmView(APIView):
-    permission_classes = [AllowAny]
+class PasswordResetConfirmView(APIView):
     def post(self, request, uidb64, token):
         try:
-            uid = urlsafe_base64_decode(uidb64).decode()
+            uid = force_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
+
+            # Sprawdzenie ważności tokena (czy nie minęło 5 minut)
+            token_age = now() - user.date_joined  # Lub `user.last_login`
+            if token_age > timedelta(minutes=5):
+                return Response({"error": "Link do resetowania hasła wygasł."}, status=status.HTTP_400_BAD_REQUEST)
 
             # Weryfikacja tokena
             if not default_token_generator.check_token(user, token):
-                return Response({"error": "Token jest nieprawidłowy lub wygasł."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Nieprawidłowy token."}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Pobranie nowego hasła
+            # Aktualizacja hasła
             new_password = request.data.get("new_password")
             confirm_password = request.data.get("confirm_password")
 
             if new_password != confirm_password:
-                return Response({"error": "Hasła nie pasują do siebie."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Hasła nie są identyczne."}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Zmiana hasła użytkownika
             user.set_password(new_password)
             user.save()
 
             return Response({"message": "Hasło zostało zmienione."}, status=status.HTTP_200_OK)
-        except Exception:
-            return Response({"error": "Błąd przetwarzania żądania."}, status=status.HTTP_400_BAD_REQUEST)
+
+        except (User.DoesNotExist, ValueError, TypeError):
+            return Response({"error": "Nieprawidłowe dane użytkownika."}, status=status.HTTP_400_BAD_REQUEST)
