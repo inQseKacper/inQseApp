@@ -26,7 +26,7 @@ function RequestResetPasswod() {
       const res = await api.post("/api/password-reset/", { email });
       setMessage("Link do resetowania hasła został wysłany.");
     } catch (error) {
-      // if(error.response?.data)
+      if(error.response?.data == "Nie ma takiego konta")
       setErrorMessage(error.response?.data?.error || "Wystąpił błąd.");
     }
   };
