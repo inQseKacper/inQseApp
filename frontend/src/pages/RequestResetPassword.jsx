@@ -14,7 +14,7 @@ function RequestResetPasswod() {
   const handleRedirect = () => {
     setTimeout(() => {
       naigate("/")
-    }, 5000);
+    }, 7000);
   }
 
   const handleSubmit = async (e) => {
@@ -26,8 +26,11 @@ function RequestResetPasswod() {
       const res = await api.post("/api/password-reset/", { email });
       setMessage("Link do resetowania hasła został wysłany.");
     } catch (error) {
-      if(error.response?.data == "Nie ma takiego konta")
-      setErrorMessage(error.response?.data?.error || "Wystąpił błąd.");
+      if (error.response?.data === "Nie ma takiego konta") {
+        setError("Adres e-mail nie istnieje w naszej bazie.");
+    } else {
+        setError(error.response?.data || "Wystąpił błąd. Spróbuj ponownie.");
+    }
     }
   };
 
