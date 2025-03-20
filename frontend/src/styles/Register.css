@@ -80,19 +80,25 @@
 }
 
 .bottom-button {
-    background: #0c2852;
-    color: white;
-    padding: 10px;
     border-radius: 6px;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: bold;
+    color: #0c2852;
     cursor: pointer;
     border: none;
+    background: none;
+    text-decoration: underline;
+}
+
+.btn1 {
+    margin-left: 17px;
 }
 
 .bottom-button:hover {
-    background: #011e3d;
+    background: #0c2852;
     transform: scale(1.05);
+    color: #ffffff;
+    padding: 6px;
 }
 
 .register-p {

@@ -100,10 +100,10 @@ function Login() {
             <div className="flex-container">
                 <p className="register-p">Nie masz konta?</p>
                 <button 
-                    className="bottom-button"
+                    className="bottom-button btn1"
                     onClick={() => navigate("/register")}
                     type="button"
-                >Zarejestruj
+                >Zarejestruj się
                 </button>
             </div>
         </form>

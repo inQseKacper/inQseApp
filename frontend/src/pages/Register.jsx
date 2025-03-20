@@ -98,7 +98,7 @@ function Register() {
             <div className="flex-container">
               <p className="register-p">Masz już konto?</p>
               <button className="bottom-button" onClick={() => navigate("/login")} type="button">
-                Zaloguj
+                Zaloguj się
               </button>
             </div>
           </Form>
