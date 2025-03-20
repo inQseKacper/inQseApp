@@ -95,3 +95,32 @@ class VerifyCodeView(APIView):
         
         except (User.DoesNotExist, EmailVerification.DoesNotExist):
             return Response({"error": "Nie znaleziono użytkownika lub kodu."}, status=400)
+        
+class ResendVerificationCodeView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get("email")
+
+        try:
+            user = User.objects.get(email=email)
+            verification, created = EmailVerification.objects.get_or_create(user=user)
+
+            # Generujemy nowy kod weryfikacyjny
+            new_code = ''.join(random.choices(string.digits, k=6))
+            verification.verification_code = new_code
+            verification.save()
+
+            # Wysyłamy nowy email
+            send_mail(
+                "Twój nowy kod weryfikacyjny",
+                f"Twój nowy kod to: {new_code}",
+                "inqsepartner@gmail.com",
+                [email],
+                fail_silently=False,
+            )
+
+            return Response({"message": "Nowy kod weryfikacyjny został wysłany."}, status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            return Response({"error": "Nie znaleziono użytkownika z tym adresem e-mail."}, status=status.HTTP_400_BAD_REQUEST)
