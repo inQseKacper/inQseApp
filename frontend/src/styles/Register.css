@@ -117,4 +117,9 @@
 .verify {
     font-size: 14px;
 }
+
+.success-message{
+    background-color: green;
+    color: white;
+}
   

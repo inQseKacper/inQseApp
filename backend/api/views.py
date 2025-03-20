@@ -104,6 +104,12 @@ class ResendVerificationCodeView(APIView):
 
         try:
             user = User.objects.get(email=email)
+
+            if user.is_active:
+                return Response(
+                     {"error": "To konto jest już aktywne. Nie można ponownie wysłać kodu."}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             verification, created = EmailVerification.objects.get_or_create(user=user)
 
             # Generujemy nowy kod weryfikacyjny
