@@ -9,9 +9,11 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem(ACCESS_TOKEN);
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (!config.url.includes("/verify/")) {
+      const token = localStorage.getItem("ACCESS_TOKEN");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
@@ -19,5 +21,6 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
 
 export default api;

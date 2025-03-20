@@ -73,7 +73,7 @@ class CreateUserView(generics.CreateAPIView):
 User = get_user_model()   
 
 class VerifyCodeView(APIView):
-    permission_classes = [AllowAny]  # 🔥 To pozwala na dostęp bez tokena
+    permission_classes = [AllowAny]
 
     def post(self, request):
         email = request.data.get("email")
