@@ -147,7 +147,7 @@ class RequestResetPasswordView(APIView):
             uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
 
-            reset_link = f"https://inqseapp-75a17f6e3740.herokuapp.com/api/reset-password?uid={uidb64}&token={token}"
+            reset_link = f"https://inqsepartner.netlify.app/api/reset-password?uid={uidb64}&token={token}"
             
             send_mail(
                 "Resetowanie hasła",
