@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 import random
 import string
 from django.contrib.auth.models import AbstractUser
+from datetime import date
 
 
 class Note(models.Model):
@@ -48,6 +49,7 @@ class ApartmentsEarnings(models.Model):
     occupancy = models.DecimalField(max_digits=5, decimal_places=2)      # Obłożenie
     revpar = models.DecimalField(max_digits=10, decimal_places=2)        # RevPAR
     for_owner = models.DecimalField(max_digits=10, decimal_places=2)     # Dla właściciela
+    month = models.DateField(default=date.today)
 
     def __str__(self):
         return f"{self.apartment.room_number} - {self.income} zł"
