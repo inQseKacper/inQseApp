@@ -25,9 +25,9 @@ function Home() {
   const navigate = useNavigate();
   const [apartments, setApartments] = useState([]);
 
-  useEffect(() => {
-    getNotes();
-  }, []);
+  // useEffect(() => {
+  //   getNotes();
+  // }, []);
 
   useEffect(() => {
     displayApartmnets();
@@ -38,22 +38,23 @@ function Home() {
       .get("/api/notes/")
       .then((res) => res.data)
       .then((data) => {
-        setNotes(data.apartment);
+        setNotes(data);
         console.log(data);
       })
       .catch((err) => alert(err));
-    };
+  };
 
-    const displayApartmnets = () => {
-      api
-        .get("/api/selected-owner/")
-        .then((res) => res.data)
-        .then((data) => {
-          setApartments(data)
-          console.log(data)
-        })
-    }
-    
+  const displayApartmnets = () => {
+    api
+      .get("/api/selected-owner/")
+      .then((res) => res.data)
+      .then((data) => {
+        setApartments(data);
+        console.log(data);
+      })
+      .catch((err) =>alert(err));
+  };
+
   const deleteNote = (id) => {
     api
       .delete(`/api/notes/delete/${id}/`)
@@ -77,12 +78,15 @@ function Home() {
       .catch((err) => alert(err));
   };
 
-
   return (
     <Container fluid>
       {/* GÓRNY PANEL */}
       <Row className="top align-items-center">
-        <Col xs={12} md={3} className="d-flex justify-content-center border-end">
+        <Col
+          xs={12}
+          md={3}
+          className="d-flex justify-content-center border-end"
+        >
           <img src="https://quguse.pl/img/INQSE_logo.png" alt="Logo INQSE" />
         </Col>
         <Col
@@ -91,14 +95,24 @@ function Home() {
           className="position-relative d-flex justify-content-end pe-4"
         >
           <Dropdown>
-            <Dropdown.Toggle style={{ backgroundColor: "#f0f0f0",  fontSize: "1vw", color: "black"}} variant="success" id="dropdown-basic">
-              <FontAwesomeIcon icon={faUser} className="user-icon"/>
+            <Dropdown.Toggle
+              style={{
+                backgroundColor: "#f0f0f0",
+                fontSize: "1vw",
+                color: "black",
+              }}
+              variant="success"
+              id="dropdown-basic"
+            >
+              <FontAwesomeIcon icon={faUser} className="user-icon" />
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
               <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
               <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-              <Dropdown.Item onClick={() => navigate("/logout")}>Wloguj się</Dropdown.Item>
+              <Dropdown.Item onClick={() => navigate("/logout")}>
+                Wloguj się
+              </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </Col>
@@ -171,7 +185,10 @@ function Home() {
                 <Card.Title>Najnowszy raport</Card.Title>
                 <Card.Text>
                   {apartments.map((apartment) => (
-                    <Apartment apartment={apartment} key={apartment.id}></Apartment>
+                    <Apartment
+                      apartment={apartment}
+                      key={apartment.id}
+                    ></Apartment>
                   ))}
                 </Card.Text>
               </Card>
