@@ -52,7 +52,7 @@ function Home() {
         setApartments(data);
         console.log(data);
       })
-      .catch((err) =>alert(err));
+      .catch((err) =>console.log(err));
   };
 
   const deleteNote = (id) => {

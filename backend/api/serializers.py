@@ -24,7 +24,7 @@ class NoteSerializer(serializers.ModelSerializer):
 class AprtmentsEarningsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApartmentsEarnings
-        fieds = '__all__'
+        fields = '__all__'
 
 
 class ApartmentSerializer(serializers.ModelSerializer):
