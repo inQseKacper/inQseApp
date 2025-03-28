@@ -20,13 +20,13 @@ class Command(BaseCommand):
         
         for index, row in df.iterrows():
             owner_name = row["Właściciel"]
+            email = row["Email"]
             
-            # pomijanie wierszy bez właściciela
-            if pd.isna(owner_name) or str(owner_name).strip() == '':
+            # pomijanie wierszy bez właściciela bądź emaila
+            if pd.isna(owner_name) or str(owner_name).strip() == '' or pd.isna(email) or str(email).strip() == '':
                 self.stdout.write(self.style.WARNING(f"⚠️ Pominięto wiersz {index + 2} – brak właściciela."))
                 continue
             
-            email = f"{owner_name.lower().replace(' ', '_')}@brakemaila.com"
             
             # tworzenie/pobieranie właściciela
             owner,_ = Owner.objects.get_or_create(

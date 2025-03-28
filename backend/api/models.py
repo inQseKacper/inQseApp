@@ -27,6 +27,7 @@ class EmailVerification(models.Model):
         self.save()
         
 class Owner(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     full_name = models.CharField(max_length=50)
     email = models.EmailField()
     

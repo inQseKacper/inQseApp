@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import generics, status
 from .serializers import UserSerializer, NoteSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import Note
+from .models import Note, Owner
 from .models import EmailVerification
 import random
 import string
@@ -75,7 +75,7 @@ class CreateUserView(generics.CreateAPIView):
             return Response({"error": f"Wystąpił błąd: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-User = get_user_model()   
+User = get_user_model()
 
 class VerifyCodeView(APIView):
     permission_classes = [AllowAny]
@@ -92,6 +92,12 @@ class VerifyCodeView(APIView):
 
             if verification.verification_code == code:
                 user.is_active = True
+                try:
+                    owner = Owner.objects.get(email=user.email)
+                    owner.user = user
+                    owner.save()
+                except Owner.DoesNotExist:
+                    return Response({"warning": "Konto aktywowane, ale właściciel nie został przypisany."}, status=200)
                 user.save()
                 verification.delete()
                 return Response({"message": "Konto zostało aktywowane!"}, status=200)
