@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import generics, status
-from .serializers import UserSerializer, NoteSerializer
+from .serializers import UserSerializer, NoteSerializer, OwnerSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Note, Owner
 from .models import EmailVerification
@@ -15,7 +15,6 @@ from rest_framework.views import APIView
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
-from django.urls import reverse
 from django.utils.http import urlsafe_base64_decode
 
 
@@ -194,3 +193,12 @@ class ResetPasswordConfirmView(APIView):
             return Response({"message": "Hasło zostało zmienione."}, status=status.HTTP_200_OK)
         except Exception:
             return Response({"error": "Błąd przetwarzania żądania."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+class SelectedOwnerDataView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        owner = request.user.owner
+        serilizer = OwnerSerializer(owner)
+        return Response(serilizer.data)

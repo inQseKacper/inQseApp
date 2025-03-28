@@ -34,7 +34,7 @@ function RequestResetPasswod() {
 
   return (
     <div className="centered-container">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="register-form">
         <a href="https://inqse.com/" target="_blank">
           <img
             src="https://quguse.pl/img/INQSE_logo.png"

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 import Note from "../components/Note";
+import Apartment from "../components/Apartment";
 import "../styles/Home.css";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -21,10 +22,15 @@ function Home() {
   const [notes, setNotes] = useState([]);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [apartments, setApartments] = useState([]);
 
   useEffect(() => {
     getNotes();
+  }, []);
+
+  useEffect(() => {
+    displayApartmnets();
   }, []);
 
   const getNotes = () => {
@@ -32,12 +38,22 @@ function Home() {
       .get("/api/notes/")
       .then((res) => res.data)
       .then((data) => {
-        setNotes(data);
+        setNotes(data.apartment);
         console.log(data);
       })
       .catch((err) => alert(err));
-  };
+    };
 
+    const displayApartmnets = () => {
+      api
+        .get("/api/selected-owner/")
+        .then((res) => res.data)
+        .then((data) => {
+          setApartments(data)
+          console.log(data)
+        })
+    }
+    
   const deleteNote = (id) => {
     api
       .delete(`/api/notes/delete/${id}/`)
@@ -60,6 +76,7 @@ function Home() {
       })
       .catch((err) => alert(err));
   };
+
 
   return (
     <Container fluid>
@@ -152,6 +169,11 @@ function Home() {
             <Col xs={12} md={6}>
               <Card className="home-card mb-3">
                 <Card.Title>Najnowszy raport</Card.Title>
+                <Card.Text>
+                  {apartments.map((apartment) => (
+                    <Apartment apartment={apartment} key={apartment.id}></Apartment>
+                  ))}
+                </Card.Text>
               </Card>
             </Col>
             <Col xs={12} md={6}>

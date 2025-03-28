@@ -83,7 +83,7 @@ const VerifyCode = () => {
           }, [values.email]);
 
           return (
-            <Form>
+            <Form className="register-form">
               <a href="https://inqse.com/" target="_blank">
                 <img
                   src="https://quguse.pl/img/INQSE_logo.png"
