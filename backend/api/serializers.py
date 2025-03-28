@@ -32,7 +32,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Apartment
-        fields = ['id', 'room_number', 'owner', 'earnings']
+        fields = ['id', 'room_name', 'owner', 'earnings']
         
 class OwnerSerializer(serializers.ModelSerializer):
     apartments = ApartmentSerializer(many=True, read_only=True)
