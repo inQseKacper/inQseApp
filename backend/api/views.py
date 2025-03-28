@@ -196,9 +196,9 @@ class ResetPasswordConfirmView(APIView):
         
         
 class SelectedOwnerDataView(APIView):
-    serializer_class = OwnerSerializer
     permission_classes = [IsAuthenticated]
-    
-    def get_queryset(self):
-        owner = self.request.user.owner
-        return Owner.objects.filter(owner=owner)
+
+    def get(self, request):
+        owner = request.user.owner
+        serializer = OwnerSerializer(owner)
+        return Response(serializer.data)
