@@ -214,10 +214,10 @@ class ContactFormView(APIView):
             data = serializer.validated_data
             
             send_mail(
-                subject=data["email_subject"],
+                subject=f"{data["email_subject"]} od {data["email"]}",
                 message=data["email_message"],
-                from_email=data["email"],
-                email_to = ["inqsepartner@gmail.com"],
+                from_email="inqsepartner@gmail.com",
+                recipient_list="inqsepartner@gmail.com",
                 fail_silently=False,
             )
             
