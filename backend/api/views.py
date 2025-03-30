@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import generics, status
-from .serializers import UserSerializer, NoteSerializer, OwnerSerializer
+from .serializers import UserSerializer, NoteSerializer, OwnerSerializer, ContactFormSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Note, Owner
 from .models import EmailVerification
@@ -202,3 +202,25 @@ class SelectedOwnerDataView(APIView):
         owner = request.user.owner
         serializer = OwnerSerializer(owner)
         return Response(serializer.data)
+    
+    
+class ContactFormView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self,request):
+        serializer = ContactFormSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            data = serializer.validated_data
+            
+            send_mail(
+                subject=data["email_subject"],
+                message=data["email_message"],
+                from_email=data["email"],
+                email_to = ["inqsepartner@gmail.com"],
+                fail_silently=False,
+            )
+            
+            return Response({"message": "Wiadomość została wysłana"}, status=200)
+
+        return Response(serializer.errors, status=400)

@@ -9,4 +9,5 @@ urlpatterns = [
     path("password-reset/", views.RequestResetPasswordView.as_view(), name="pasword-reset"),
     path("password-reset-confirm/<uidb64>/<token>/", views.ResetPasswordConfirmView.as_view(), name="password-reset-confirm"),
     path("selected-owner/", views.SelectedOwnerDataView.as_view(), name="my-owner"),
+    path("contact/", views.ContactFormView.as_view(), name="contact")
 ]

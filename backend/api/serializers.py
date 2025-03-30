@@ -41,3 +41,8 @@ class OwnerSerializer(serializers.ModelSerializer):
         fields = ['id', 'full_name', 'email', 'apartments']
 
 
+class ContactFormSerializer(serializers.Serializer):
+    first_name = serializers.CharField(max_length=50)
+    last_name = serializers.CharField(max_length=50)
+    email = serializers.EmailField()
+    email_message = serializers.CharField()
